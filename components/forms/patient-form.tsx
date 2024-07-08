@@ -9,6 +9,8 @@ import SubmitButton from "../SubmitButton";
 import { useState } from "react";
 import { UserFormSchema } from "@/lib/validation";
 import { useRouter } from "next/navigation";
+import { createUser } from "@/lib/actions/patient.actions";
+
 
 export enum FormFieldType {
   INPUT = "input",
@@ -21,6 +23,7 @@ export enum FormFieldType {
 const PatientForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof UserFormSchema>>({
     resolver: zodResolver(UserFormSchema),
@@ -39,13 +42,15 @@ const PatientForm = () => {
     setIsLoading(true);
     try {
       const userFormData = { name, email, phone };
-
-      // const user= await createUser(userFormData);
-      // if(user){
-      //   router.push(`/patients/${user.id}/register`)
-      // }
+      const user = await createUser(userFormData);
+      if (user) {
+        // console.log("user created");
+        router.push(`/patients/${user.$id}/register`)
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
   return (
