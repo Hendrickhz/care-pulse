@@ -29,7 +29,7 @@ interface CustomProps {
   iconSrc?: string;
   disabled?: boolean;
   dateFormat?: string;
-  showTimeSelect?: string;
+  showTimeSelect?: boolean;
   children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode; //can be used to show a loading stage for input
 }
