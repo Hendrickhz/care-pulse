@@ -1,12 +1,15 @@
 import PatientForm from "@/components/forms/patient-form";
+import PasskeyModal from "@/components/PasskeyModal";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Home() {
+export default function Home({ searchParams }: SearchParamProps) {
+  const isAdmin = searchParams?.admin === "true";
   return (
     <div className=" h-screen max-h-screen flex">
-      {/* TODO:: OTP Verification | Passkey Modal */}
+      {isAdmin && <PasskeyModal />}
+
       {/* left side patient form  */}
       <section className=" remove-scrollbar container my-auto">
         <div className=" sub-container max-w-[496px]">
