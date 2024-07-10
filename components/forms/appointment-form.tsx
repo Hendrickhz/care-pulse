@@ -40,10 +40,13 @@ const AppointmentForm = ({
     let status;
     switch (type) {
       case "create":
-        status = "cancelled";
+        status = "pending";
         break;
       case "cancel":
         status = "cancelled";
+        break;
+      case "schedule":
+        status = "scheduled";
         break;
 
       default:
@@ -167,7 +170,6 @@ const AppointmentForm = ({
           }`}
           isLoading={isLoading}
         >
-          
           {buttonLabel}
         </SubmitButton>
       </form>
