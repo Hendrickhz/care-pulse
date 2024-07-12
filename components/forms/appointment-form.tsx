@@ -28,7 +28,7 @@ const AppointmentForm = ({
   patientId: string;
   type: "create" | "cancel" | "schedule";
   appointment?: Appointment;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
