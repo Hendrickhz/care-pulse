@@ -37,7 +37,10 @@ const AppointmentForm = ({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
       primaryPhysician: appointment?.primaryPhysician || "",
-      schedule: new Date(appointment?.schedule!) || new Date(Date.now()),
+      schedule:
+        type === "create"
+          ? new Date()
+          : new Date(appointment?.schedule!),
       reason: appointment?.reason || "",
       note: appointment?.note || "",
       cancellationReason: appointment?.cancellationReason || "",

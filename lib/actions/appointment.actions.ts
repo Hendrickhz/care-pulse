@@ -1,7 +1,7 @@
 "use server";
 import { ID, Query } from "node-appwrite";
-import { databases } from "../appwrite.config";
-import { parseStringify } from "../utils";
+import { databases, messaging } from "../appwrite.config";
+import { formatDateTime, parseStringify } from "../utils";
 import { Appointment } from "@/types/appwrite.types";
 import { revalidatePath } from "next/cache";
 
@@ -34,18 +34,23 @@ export const getAppointment = async (appointmentId: string) => {
   }
 };
 
+
 export const getRecentAppointmentList = async () => {
   try {
     const appointments = await databases.listDocuments(
       process.env.NEXT_PUBLIC_DATABASE_ID!,
-      process.env.NEXT_PUBLIC_APPOINTMENTS_COLLECTION_ID!,
-      [Query.orderDesc("$createdAt")]
+      process.env.NEXT_PUBLIC_APPOINTMENTS_COLLECTION_ID!,[
+        Query.orderDesc("$createdAt")
+      ]
     );
+
+
     const initialCounts = {
       scheduledCount: 0,
       pendingCount: 0,
       cancelledCount: 0,
     };
+
     const counts = (appointments.documents as Appointment[]).reduce(
       (acc, appointment) => {
         switch (appointment.status) {
@@ -56,23 +61,26 @@ export const getRecentAppointmentList = async () => {
             acc.pendingCount++;
             break;
           case "cancelled":
-           
             acc.cancelledCount++;
-
             break;
         }
         return acc;
       },
       initialCounts
     );
+
     const data = {
       totalCount: appointments.total,
       ...counts,
       documents: appointments.documents,
     };
+
     return parseStringify(data);
   } catch (error) {
-    console.log(error);
+    console.error(
+      "An error occurred while retrieving the recent appointments:",
+      error
+    );
   }
 };
 
@@ -95,9 +103,33 @@ export const updateAppointment = async ({
     }
 
     //TODO send SMS
-
+    const smsMessage = `
+    ${
+      type === "schedule"
+        ? `Hi, it's CarePulse. Your appointment has been scheduled for ${formatDateTime(
+            appointment.schedule!
+          ).dateTime}`
+        : `We regret to inform you that your appointment has been cancelled. Reason : ${appointment.cancellationReason}
+      `
+    }
+    `;
+    await sendSMSNotification(userId, smsMessage);
     revalidatePath("/admin");
     return parseStringify(updatedAppointment);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const sendSMSNotification = async (userId: string, content: string) => {
+  try {
+    const message = await messaging.createSms(
+      ID.unique(),
+      content,
+      [],
+      [userId]
+    );
+    return parseStringify(message);
   } catch (error) {
     console.log(error);
   }

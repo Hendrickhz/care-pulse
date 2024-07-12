@@ -82,7 +82,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
       return (
         <FormControl>
           <PhoneInput
-            defaultCountry="US"
+      
             international
             withCountryCallingCode
             className="input-phone "

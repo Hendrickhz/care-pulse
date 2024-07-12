@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
@@ -16,7 +15,6 @@ const PatientForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof UserFormValidation>>({
     resolver: zodResolver(UserFormValidation),
     defaultValues: {
@@ -25,7 +23,7 @@ const PatientForm = () => {
       phone: "",
     },
   });
-  // 2. Define a submit handler.
+
   async function onSubmit({
     name,
     email,
@@ -36,8 +34,9 @@ const PatientForm = () => {
       const userFormData = { name, email, phone };
       const user = await createUser(userFormData);
       if (user) {
-        // console.log("user created");
         router.push(`/patients/${user.$id}/register`);
+      } else {
+        console.log("error");
       }
     } catch (error) {
       console.log(error);
